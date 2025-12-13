@@ -43,7 +43,7 @@ export function PwaInstaller() {
     return (
         <button
             onClick={handleInstallClick}
-            className="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 hover:bg-white text-black rounded-full text-xs font-bold transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] animate-pulse"
+            className="flex md:hidden items-center gap-2 px-3 py-1.5 bg-zinc-100 hover:bg-white text-black rounded-full text-xs font-bold transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] animate-pulse"
         >
             <Download className="h-3.5 w-3.5" />
             Install App
