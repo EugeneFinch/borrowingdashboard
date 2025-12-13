@@ -41,9 +41,12 @@ export function Dashboard({ initialMarkets }: DashboardProps) {
         // RULE: Borrow Asset Filter
         // If ANY, allow both USDC and USDT. If specific, match exact.
         if (borrowAsset === 'ANY') {
-            result = result.filter(m => m.loanAsset.symbol === 'USDC' || m.loanAsset.symbol === 'USDT');
+            result = result.filter(m => {
+                const s = m.loanAsset.symbol.toUpperCase();
+                return s.includes('USDC') || s.includes('USDT') || s === 'USDBC';
+            });
         } else {
-            result = result.filter(m => m.loanAsset.symbol === borrowAsset);
+            result = result.filter(m => m.loanAsset.symbol.includes(borrowAsset));
         }
 
         // RULE: Minimum Liquidity Filter (Filter out "junk" / empty markets)

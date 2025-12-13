@@ -1,5 +1,6 @@
+import { PwaInstaller } from '@/components/PwaInstaller';
 import { Dashboard } from '@/components/Dashboard';
-import { fetchMarkets } from '@/lib/morpho';
+import { fetchMarkets, Market } from '@/lib/morpho';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,8 +18,12 @@ export default async function Home() {
             </div>
             <span className="font-bold text-white text-lg tracking-tight">Morpho<span className="text-zinc-600">Monitor</span></span>
           </div>
-          <div className="text-xs text-zinc-500 font-mono">
-            V1.0.0
+
+          <div className="flex items-center gap-4">
+            <PwaInstaller />
+            <div className="text-xs text-zinc-500 font-mono">
+              V1.0.0
+            </div>
           </div>
         </div>
       </nav>
