@@ -86,7 +86,7 @@ export function MarketOverview() {
                         </div>
                         <span className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">ETF</span>
                     </div>
-                    <div className="flex justify-between items-end">
+                    <div className="flex items-end gap-6">
                         <div className="flex flex-col">
                             <span className="text-3xl font-mono text-zinc-100 font-medium">
                                 {data.ibitPrice ? `$${data.ibitPrice.toFixed(2)}` : "N/A"}
@@ -98,9 +98,9 @@ export function MarketOverview() {
                             )}
                         </div>
                         {data.ibitNav && (
-                            <div className="flex flex-col items-end">
-                                <span className="text-xs text-zinc-500 uppercase font-bold tracking-wider">NAV</span>
-                                <span className="text-lg font-mono text-zinc-300">
+                            <div className="flex flex-col pb-1">
+                                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-0.5">NAV</span>
+                                <span className="text-base font-mono text-zinc-400">
                                     ${data.ibitNav.toFixed(2)}
                                 </span>
                             </div>
