@@ -98,11 +98,22 @@ export function MarketTable({ markets }: MarketTableProps) {
                                     {/* Borrow APY */}
                                     <td className="pr-6 py-4 text-right">
                                         <div className="flex flex-col items-end">
-                                            <span className="text-base font-bold text-emerald-400 font-mono tracking-tight">
-                                                {formatPercent(state.borrowApy)}
-                                            </span>
-                                            {/* Subtext purely for aesthetics */}
-                                            {/* <span className="text-[10px] text-gray-600">Avg. 30d</span> */}
+                                            {(() => {
+                                                const rewardsApr = state.rewards?.reduce((acc, r) => acc + r.borrowApr, 0) || 0;
+                                                const netApy = state.borrowApy - rewardsApr;
+                                                return (
+                                                    <>
+                                                        <span className="text-base font-bold text-emerald-400 font-mono tracking-tight">
+                                                            {formatPercent(netApy)}
+                                                        </span>
+                                                        {rewardsApr > 0 && (
+                                                            <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                                                                Inc. Rewards
+                                                            </span>
+                                                        )}
+                                                    </>
+                                                );
+                                            })()}
                                         </div>
                                     </td>
                                 </tr>

@@ -25,6 +25,10 @@ export function MarketRow({ market, isBestRate }: MarketRowProps) {
     const utilWidth = Math.min(state.utilization * 100, 100);
     const utilColor = state.utilization > 0.9 ? 'bg-red-500' : state.utilization > 0.75 ? 'bg-yellow-500' : 'bg-emerald-500';
 
+    // Calculate Net APY
+    const rewardsApr = state.rewards?.reduce((acc, r) => acc + r.borrowApr, 0) || 0;
+    const netApy = state.borrowApy - rewardsApr;
+
     return (
         <div className={clsx(
             "grid grid-cols-12 gap-4 items-center p-4 border-b border-[#27272a] hover:bg-[#18181b] transition-colors group text-sm",
@@ -83,9 +87,14 @@ export function MarketRow({ market, isBestRate }: MarketRowProps) {
                         "text-lg font-mono-numbers font-bold",
                         isBestRate ? "text-emerald-400" : "text-white"
                     )}>
-                        {formatPercent(state.borrowApy)}
+                        {formatPercent(netApy)}
                     </span>
-                    {isBestRate && (
+                    {rewardsApr > 0 && (
+                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
+                            Inc. Rewards
+                        </span>
+                    )}
+                    {isBestRate && !rewardsApr && (
                         <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
                             Best Rate
                         </span>
