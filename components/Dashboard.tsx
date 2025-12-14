@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Market, CHAIN_IDS } from '@/lib/morpho';
 import { Search, RotateCcw, LayoutGrid, List } from 'lucide-react'; // LayoutGrid could be icon for Overview
 import clsx from 'clsx';
-// import { MarketRow } from './MarketRow';
+import { MarketRow } from './MarketRow';
 import { MarketTable } from './MarketTable';
 import { MarketOverview } from './MarketOverview';
 
@@ -210,7 +210,7 @@ export function Dashboard({ initialMarkets }: DashboardProps) {
                         </div>
                     </div>
 
-                    {/* Markets List (Using MarketTable) */}
+                    {/* Markets List */}
                     <div className="space-y-0.5">
                         {filteredMarkets.length === 0 ? (
                             <div className="h-32 flex flex-col items-center justify-center text-zinc-500 border border-zinc-800 rounded-lg bg-zinc-900/20">
@@ -218,7 +218,23 @@ export function Dashboard({ initialMarkets }: DashboardProps) {
                                 <p>No active markets found.</p>
                             </div>
                         ) : (
-                            <MarketTable markets={filteredMarkets} />
+                            <>
+                                {/* Desktop View: Table */}
+                                <div className="hidden md:block">
+                                    <MarketTable markets={filteredMarkets} />
+                                </div>
+
+                                {/* Mobile View: Cards */}
+                                <div className="md:hidden space-y-3">
+                                    {filteredMarkets.map((market, index) => (
+                                        <MarketRow
+                                            key={market.uniqueKey}
+                                            market={market}
+                                            isBestRate={index === 0}
+                                        />
+                                    ))}
+                                </div>
+                            </>
                         )}
                     </div>
 

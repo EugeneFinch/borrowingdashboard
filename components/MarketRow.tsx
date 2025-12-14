@@ -19,90 +19,80 @@ export function MarketRow({ market, isBestRate }: MarketRowProps) {
         }).format(val);
     };
 
+    const formatMoney = (val: number) => {
+        if (val >= 1e9) return `$${(val / 1e9).toFixed(2)}B`;
+        if (val >= 1e6) return `$${(val / 1e6).toFixed(2)}M`;
+        if (val >= 1e3) return `$${(val / 1e3).toFixed(0)}K`;
+        return `$${val.toFixed(2)}`;
+    };
+
     const chainName = CHAIN_IDS[morphoBlue.chain.id] || `${morphoBlue.chain.id}`;
 
-    // Ethena/Pro style utilization bar
-    const utilWidth = Math.min(state.utilization * 100, 100);
-    const utilColor = state.utilization > 0.9 ? 'bg-red-500' : state.utilization > 0.75 ? 'bg-yellow-500' : 'bg-emerald-500';
+    const val = parseFloat(state.supplyAssets);
+    const liquidityRaw = isNaN(val) ? 0 : val / (10 ** loanAsset.decimals);
 
-    // Calculate Net APY
+    // Calc Net APY
     const rewardsApr = state.rewards?.reduce((acc, r) => acc + r.borrowApr, 0) || 0;
     const netApy = state.borrowApy - rewardsApr;
 
     return (
         <div className={clsx(
-            "grid grid-cols-12 gap-4 items-center p-4 border-b border-[#27272a] hover:bg-[#18181b] transition-colors group text-sm",
-            isBestRate ? "bg-[#18181b]/50" : ""
+            "flex flex-col gap-3 p-4 border border-zinc-800 rounded-xl bg-zinc-900/50 mb-3",
+            isBestRate ? "ring-1 ring-emerald-500/50 bg-emerald-950/10" : ""
         )}>
-
-            {/* ASSET (Col 1-3) */}
-            <div className="col-span-3 flex items-center gap-3">
-                {/* Placeholder for Token Icon if we had one */}
-                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
-                    {loanAsset.symbol[0]}
-                </div>
+            {/* Header: Pair & Chain */}
+            <div className="flex justify-between items-start">
                 <div className="flex flex-col">
-                    <span className="font-bold text-white">{loanAsset.symbol}</span>
-                    <span className="text-xs text-zinc-500">Borrow</span>
-                </div>
-            </div>
-
-            {/* COLLATERAL (Col 4-6) */}
-            <div className="col-span-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
-                    {collateralAsset?.symbol?.[0] || '-'}
-                </div>
-                <div className="flex flex-col">
-                    <span className="font-medium text-zinc-300">{collateralAsset?.symbol || 'N/A'}</span>
-                    <span className="text-xs text-zinc-500">Collateral</span>
-                </div>
-            </div>
-
-            {/* CHAIN (Col 7-8) */}
-            <div className="col-span-2 flex items-center">
-                <span className="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-xs text-zinc-400 uppercase tracking-wider font-medium">
-                    {chainName}
-                </span>
-            </div>
-
-            {/* UTILIZATION (Col 9-10) */}
-            <div className="col-span-2 flex flex-col gap-1.5 pr-4">
-                <div className="flex justify-between items-center text-xs">
-                    <span className="text-zinc-500">
-                        {formatPercent(state.utilization)}
-                    </span>
-                </div>
-                <div className="h-1.5 w-full bg-zinc-800 rounded-sm overflow-hidden">
-                    <div
-                        className={clsx("h-full rounded-sm", utilColor)}
-                        style={{ width: `${utilWidth}%` }}
-                    />
-                </div>
-            </div>
-
-            {/* APY (Col 11-12) */}
-            <div className="col-span-2 flex justify-end items-center gap-2">
-                <div className="flex flex-col items-end">
-                    <span className={clsx(
-                        "text-lg font-mono-numbers font-bold",
-                        isBestRate ? "text-emerald-400" : "text-white"
-                    )}>
-                        {formatPercent(netApy)}
-                    </span>
-                    {rewardsApr > 0 && (
-                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
-                            Inc. Rewards
-                        </span>
-                    )}
-                    {isBestRate && !rewardsApr && (
-                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+                    <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-white">{loanAsset.symbol}</span>
+                        <span className="text-sm text-zinc-500">/</span>
+                        <span className="text-base text-zinc-400">{collateralAsset?.symbol || 'N/A'}</span>
+                    </div>
+                    {isBestRate && (
+                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mt-1">
                             Best Rate
                         </span>
                     )}
                 </div>
-                {/* <ExternalLink className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" /> */}
+                <span className="px-2 py-1 rounded bg-zinc-950 border border-zinc-800 text-[10px] font-medium text-zinc-400 uppercase tracking-wide">
+                    {chainName}
+                </span>
             </div>
 
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-2 gap-4 mt-1">
+                {/* Liquidity */}
+                <div className="flex flex-col">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Liquidity</span>
+                    <span className="text-sm font-mono text-zinc-300">{formatMoney(liquidityRaw)}</span>
+                </div>
+
+                {/* APY (Right Aligned) */}
+                <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-emerald-500/80 uppercase font-bold tracking-wider">Net APY</span>
+                    <span className="text-xl font-bold font-mono text-emerald-400">{formatPercent(netApy)}</span>
+                    {rewardsApr > 0 && <span className="text-[9px] text-emerald-600">(Incentivized)</span>}
+                </div>
+            </div>
+
+            {/* Utilization Bar */}
+            <div className="flex flex-col gap-1.5 pt-2 border-t border-zinc-800/50">
+                <div className="flex justify-between text-[10px]">
+                    <span className="text-zinc-500 font-medium">Utilization</span>
+                    <span className={clsx("font-mono", state.utilization > 0.9 ? "text-red-400" : "text-zinc-400")}>
+                        {formatPercent(state.utilization)}
+                    </span>
+                </div>
+                <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                        className={clsx(
+                            "h-full rounded-full",
+                            state.utilization > 0.9 ? "bg-red-500" : state.utilization > 0.75 ? "bg-amber-500" : "bg-emerald-500"
+                        )}
+                        style={{ width: `${Math.min(state.utilization * 100, 100)}%` }}
+                    />
+                </div>
+            </div>
         </div>
     );
 }
