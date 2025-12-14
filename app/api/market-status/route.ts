@@ -46,6 +46,30 @@ export async function GET() {
             console.error("Nasdaq Fetch Error:", e);
         }
 
+        // 2a. Fetch IBIT NAV (BlackRock Scraping)
+        // NAV drives futures arbitrage
+        let ibitNav = null;
+        try {
+            const brRes = await fetch('https://www.blackrock.com/us/individual/products/333011/ishares-bitcoin-trust', {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                },
+                next: { revalidate: 300 } // NAV updates once a day, cache longer
+            });
+            if (brRes.ok) {
+                const html = await brRes.text();
+                // Pattern: <span class="header-nav-data">\n$51.13\n</span>
+                // We use a loose regex to capture the price after "NAV as of"
+                const match = html.match(/NAV as of[^<]*<\/span>\s*<span class="header-nav-data">\s*\$([\d,.]+)/i)
+                    || html.match(/class="header-nav-data">\s*\$([\d,.]+)/i); // Fallback
+                if (match && match[1]) {
+                    ibitNav = parseFloat(match[1].replace(',', ''));
+                }
+            }
+        } catch (e) {
+            console.error("BlackRock NAV Fetch Error:", e);
+        }
+
         // 3. Coinbase BTC Futures (BTC-PERP)
         // Fetched via CoinGecko Derivatives endpoint
         let coinbaseBtcPrice = null;
@@ -84,6 +108,7 @@ export async function GET() {
             isOpen: isMarketOpen,
             ibitPrice,
             ibitChange,
+            ibitNav,
             coinbaseBtcPrice,
             crypto: cryptoData
         });

@@ -8,6 +8,7 @@ interface MarketData {
     isOpen: boolean;
     ibitPrice: number | null;
     ibitChange: number | null;
+    ibitNav: number | null;
     coinbaseBtcPrice: number | null;
     crypto: any[];
 }
@@ -85,14 +86,24 @@ export function MarketOverview() {
                         </div>
                         <span className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">ETF</span>
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-3xl font-mono text-zinc-100 font-medium">
-                            {data.ibitPrice ? `$${data.ibitPrice.toFixed(2)}` : "N/A"}
-                        </span>
-                        {data.ibitChange !== null && (
-                            <span className={clsx("text-xs font-medium mt-1", data.ibitChange >= 0 ? "text-emerald-400" : "text-red-400")}>
-                                {data.ibitChange > 0 ? '+' : ''}{data.ibitChange.toFixed(2)} Today
+                    <div className="flex justify-between items-end">
+                        <div className="flex flex-col">
+                            <span className="text-3xl font-mono text-zinc-100 font-medium">
+                                {data.ibitPrice ? `$${data.ibitPrice.toFixed(2)}` : "N/A"}
                             </span>
+                            {data.ibitChange !== null && (
+                                <span className={clsx("text-xs font-medium mt-1", data.ibitChange >= 0 ? "text-emerald-400" : "text-red-400")}>
+                                    {data.ibitChange > 0 ? '+' : ''}{data.ibitChange.toFixed(2)} Today
+                                </span>
+                            )}
+                        </div>
+                        {data.ibitNav && (
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs text-zinc-500 uppercase font-bold tracking-wider">NAV</span>
+                                <span className="text-lg font-mono text-zinc-300">
+                                    ${data.ibitNav.toFixed(2)}
+                                </span>
+                            </div>
                         )}
                     </div>
                 </div>
