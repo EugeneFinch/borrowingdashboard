@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Market, CHAIN_IDS } from '@/lib/morpho';
 import { Search, RotateCcw, LayoutGrid, List } from 'lucide-react'; // LayoutGrid could be icon for Overview
 import clsx from 'clsx';
-import { MarketRow } from './MarketRow';
+// import { MarketRow } from './MarketRow';
 import { MarketTable } from './MarketTable';
 import { MarketOverview } from './MarketOverview';
 
@@ -218,23 +218,7 @@ export function Dashboard({ initialMarkets }: DashboardProps) {
                                 <p>No active markets found.</p>
                             </div>
                         ) : (
-                            <>
-                                {/* Desktop View: Table */}
-                                <div className="hidden md:block">
-                                    <MarketTable markets={filteredMarkets} />
-                                </div>
-
-                                {/* Mobile View: Cards */}
-                                <div className="md:hidden space-y-3">
-                                    {filteredMarkets.map((market, index) => (
-                                        <MarketRow
-                                            key={market.uniqueKey}
-                                            market={market}
-                                            isBestRate={index === 0}
-                                        />
-                                    ))}
-                                </div>
-                            </>
+                            <MarketTable markets={filteredMarkets} />
                         )}
                     </div>
 
