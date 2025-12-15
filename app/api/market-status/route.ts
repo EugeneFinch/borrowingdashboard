@@ -49,6 +49,7 @@ export async function GET() {
         // 2a. Fetch IBIT NAV (BlackRock Scraping)
         // NAV drives futures arbitrage
         let ibitNav = null;
+        let ibitNavDate = null;
         try {
             const brRes = await fetch('https://www.blackrock.com/us/individual/products/333011/ishares-bitcoin-trust', {
                 headers: {
@@ -58,12 +59,18 @@ export async function GET() {
             });
             if (brRes.ok) {
                 const html = await brRes.text();
-                // Pattern: <span class="header-nav-data">\n$51.13\n</span>
-                // We use a loose regex to capture the price after "NAV as of"
-                const match = html.match(/NAV as of[^<]*<\/span>\s*<span class="header-nav-data">\s*\$([\d,.]+)/i)
+                // Pattern: NAV as of Dec 12, 2025 ... $51.13
+                // Capture Date and Price
+                const dateMatch = html.match(/NAV as of\s+([A-Za-z]{3}\s+\d{1,2},\s+\d{4})/i);
+                if (dateMatch && dateMatch[1]) {
+                    ibitNavDate = dateMatch[1];
+                }
+
+                const priceMatch = html.match(/NAV as of[^<]*<\/span>\s*<span class="header-nav-data">\s*\$([\d,.]+)/i)
                     || html.match(/class="header-nav-data">\s*\$([\d,.]+)/i); // Fallback
-                if (match && match[1]) {
-                    ibitNav = parseFloat(match[1].replace(',', ''));
+
+                if (priceMatch && priceMatch[1]) {
+                    ibitNav = parseFloat(priceMatch[1].replace(',', ''));
                 }
             }
         } catch (e) {
@@ -109,6 +116,7 @@ export async function GET() {
             ibitPrice,
             ibitChange,
             ibitNav,
+            ibitNavDate,
             coinbaseBtcPrice,
             crypto: cryptoData
         });
@@ -118,3 +126,4 @@ export async function GET() {
         return NextResponse.json({ error: 'Failed to fetch market data' }, { status: 500 });
     }
 }
+

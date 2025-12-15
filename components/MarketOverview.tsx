@@ -9,6 +9,7 @@ interface MarketData {
     ibitPrice: number | null;
     ibitChange: number | null;
     ibitNav: number | null;
+    ibitNavDate?: string | null;
     coinbaseBtcPrice: number | null;
     crypto: any[];
 }
@@ -100,9 +101,14 @@ export function MarketOverview() {
                         {data.ibitNav && (
                             <div className="flex flex-col pb-1">
                                 <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider mb-0.5">NAV</span>
-                                <span className="text-base font-mono text-zinc-400">
+                                <span className="text-base font-mono text-zinc-400 leading-none">
                                     ${data.ibitNav.toFixed(2)}
                                 </span>
+                                {data.ibitNavDate && (
+                                    <span className="text-[9px] text-zinc-600 mt-0.5 whitespace-nowrap">
+                                        As of {data.ibitNavDate}
+                                    </span>
+                                )}
                             </div>
                         )}
                     </div>
